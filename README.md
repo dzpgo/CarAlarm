@@ -45,6 +45,7 @@ WebSocket 服务端地址
 如果需要，我可以为你生成 appsettings.json 配置示例及完整说明文档。
 
 📂 项目目录结构（示例）
+```
 CarAlarm
 ├─ src
 │  ├─ CarInfo.cs                // 车辆信息实体类
@@ -56,6 +57,8 @@ CarAlarm
 │  └─ appsettings.json          // 配置文件
 ├─ .gitignore                   // 忽略文件
 └─ README.md                    // 项目说明
+
+```
 
 📌 未来计划
 
