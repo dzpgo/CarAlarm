@@ -60,7 +60,6 @@ CarAlarm
 ├─ Program.cs                // 程序入口
 ├─ .gitignore                // 忽略文件
 └─ README.md                 // 项目说明
-
 ```
 
 📌 未来计划
