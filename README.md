@@ -47,16 +47,13 @@ WebSocket 服务端地址
 📂 项目目录结构（示例）
 ```
 CarAlarm
-├─ src
-│  ├─ CarInfo.cs                // 车辆信息实体类
-│  ├─ carList.json              // 黑名单
-│  ├─ FileLogger.cs             // 日志控制
-│  ├─ MainForm.cs               // 声光报警器控制逻辑与画面
-│  └─ Program.cs                // 程序入口
-├─ config
-│  └─ appsettings.json          // 配置文件
-├─ .gitignore                   // 忽略文件
-└─ README.md                    // 项目说明
+├─ CarInfo.cs                // 车辆信息实体类
+├─ carList.json              // 黑名单
+├─ FileLogger.cs             // 日志控制
+├─ MainForm.cs               // 声光报警器控制逻辑与画面
+├─ Program.cs                // 程序入口
+├─ .gitignore                // 忽略文件
+└─ README.md                 // 项目说明
 
 ```
 
