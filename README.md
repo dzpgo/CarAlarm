@@ -12,25 +12,31 @@ CarAlarm 是一个基于 WebSocket 通信的车牌识别黑名单声光报警系
 🔊 控制声光报警器动作（灯光闪烁、声音报警联动）
 
 🛠 技术栈与开发环境
-项目项	信息
-开发工具	Microsoft Visual Studio Enterprise 2026
-开发语言	C#
-运行框架	.NET 10
-运行系统	Windows
-通信方式	WebSocket
-开源协议	MIT
+```
+项目项   信息
+开发工具	 Microsoft Visual Studio Enterprise 2026
+开发语言	 C#
+运行框架	 .NET 10
+运行系统	 Windows
+通信方式	 WebSocket
+开源协议	 MIT
+```
 🚀 快速开始
 1️⃣ 克隆项目
 
+```
 git clone https://github.com/dzpgo/CarAlarm.git
 cd CarAlarm
+```
 
 2️⃣ 运行程序
 
-方式一：双击运行已编译的程序
+```
+方式一：双击运行已编译的程序 
 方式二：源码运行
 
 dotnet run
+```
 
 ⚙ 配置说明
 
