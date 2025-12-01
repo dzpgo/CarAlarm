@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
@@ -16,6 +17,10 @@ namespace CarAlarm
         // 替换成你实际的WebSocket服务器地址
         //public Uri serverUri = new Uri("ws://192.168.11.24:9096/ws-push/topic/messages");
         //public Uri serverUri = new Uri(tb_ServerURL.Text.Trim());
+        // 自启注册表项名称
+        private const string AutoStartName = "CarAlarm";
+        // 注册表自启路径
+        private const string runKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
         private CancellationTokenSource? _cts;
         // 串口
         public SerialPort _serialPort = new SerialPort();
@@ -75,6 +80,21 @@ namespace CarAlarm
             _cts = new CancellationTokenSource();
             // 启动 WebSocket 循环
             _ = RunWebSocketLoopAsync(_cts.Token);
+            // 自动启动设置
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(runKey, true)!)
+            {
+                cb_AutoStart.Checked = key.GetValue(AutoStartName) != null;
+            }
+
+            // 托盘图标
+            notifyIcon1.Icon = this.Icon;               // 使用当前程序图标
+            notifyIcon1.Visible = false;
+            notifyIcon1.Text = "声光报警系统";
+
+            // 如果启动参数包含 /autostart 则自动隐藏到托盘
+            if (Environment.GetCommandLineArgs().Contains("/autostart"))
+                HideToTray();
+
         }
         /// <summary>
         /// 窗体关闭时清理资源
@@ -758,14 +778,14 @@ namespace CarAlarm
                     _serialPort.BaudRate = int.Parse(tb_Port.Text.Trim());
                     _serialPort.Open();
                     lbl_COMStatus.Text = cmb_ComPorts.Text.Trim();
-                    FileLogger.LogError("打开串口：" + cmb_ComPorts.Text.Trim());
+                    FileLogger.LogInfo("打开串口：" + cmb_ComPorts.Text.Trim());
                 }
                 else
                 {
                     _serialPort.Close();
                     var ComClose = lbl_COMStatus.Text.Equals("无") ? "无" : lbl_COMStatus.Text;
                     lbl_COMStatus.Text = "无";
-                    FileLogger.LogError("关闭串口：" + ComClose);
+                    FileLogger.LogInfo("关闭串口：" + ComClose);
                 }
             }
             catch (Exception ex)
@@ -773,6 +793,108 @@ namespace CarAlarm
                 MessageBox.Show("打开串口错误：" + ex.Message);
                 FileLogger.LogError("打开串口错误：" + ex.Message);
             }
+        }
+
+        /// <summary>
+        /// 开机自启动设置
+        /// </summary>
+        private void cb_AutoStart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(runKey, true)!)
+                {
+                    string exePath = "\"" + Application.ExecutablePath + "\""; // 加引号避免路径带空格出错
+
+                    if (cb_AutoStart.Checked)
+                    {
+                        key.SetValue(AutoStartName, exePath);
+                        FileLogger.LogInfo("设置开机自启：成功");
+                    }
+                    else
+                    {
+                        if (key.GetValue(AutoStartName) != null)
+                        {
+                            key.DeleteValue(AutoStartName);
+                            FileLogger.LogInfo("设置开机自启：关闭");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogger.LogError("设置开机自启：失败：" + ex.Message);
+                cb_AutoStart.Checked = false;
+            }
+        }
+        /// <summary>
+        /// 显示主窗口函数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ctms_ShowMain_Click(object sender, EventArgs e) => ShowMainWindow();
+        /// <summary>
+        /// 退出程序函数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ctms_Exit_Click(object sender, EventArgs e)
+        {
+            notifyIcon1.Visible = false;
+            Application.Exit();
+            FileLogger.LogInfo("退出程序.");
+        }
+        /// <summary>
+        /// 双击托盘恢复窗口函数
+        /// </summary>
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ShowMainWindow();
+        }
+        /// <summary>
+        /// 显示主窗口
+        /// </summary>
+        private void ShowMainWindow()
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+            this.Activate();
+            FileLogger.LogInfo("显示主窗口.");
+        }
+        /// <summary>
+        /// 窗口最小化时隐藏到托盘
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            //base.OnSizeChanged(e);
+
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                HideToTray();
+            }
+        }
+        /// <summary>
+        /// 最小化隐藏到托盘
+        /// </summary>
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+
+            if (WindowState == FormWindowState.Minimized)
+                HideToTray();
+        }
+
+        /// <summary>
+        /// 隐藏窗口和显示托盘图标
+        /// </summary>
+        private void HideToTray()
+        {
+            this.Hide();                 // 隐藏窗口
+            notifyIcon1.Visible = true;  // 显示托盘图标
+            FileLogger.LogInfo("隐藏窗口，显示托盘图标.");
         }
 
         #endregion
@@ -932,6 +1054,11 @@ namespace CarAlarm
             return result;
         }
         #endregion
+
+
+
+
+
 
     }
 }

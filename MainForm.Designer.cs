@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             Main_Panel = new Panel();
             Mian_TableLayoutPanel = new TableLayoutPanel();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -61,11 +62,16 @@
             tabPage3 = new TabPage();
             dgv_Blacklist = new DataGridView();
             tbpg_Settings = new TabPage();
+            cb_AutoStart = new CheckBox();
             bt_ComOpen = new Button();
             tb_Port = new TextBox();
             tb_ServerURL = new TextBox();
             label10 = new Label();
             label9 = new Label();
+            notifyIcon1 = new NotifyIcon(components);
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            ctms_ShowMain = new ToolStripMenuItem();
+            ctms_Exit = new ToolStripMenuItem();
             Main_Panel.SuspendLayout();
             Mian_TableLayoutPanel.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -79,6 +85,7 @@
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgv_Blacklist).BeginInit();
             tbpg_Settings.SuspendLayout();
+            contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // Main_Panel
@@ -436,6 +443,7 @@
             // 
             // tbpg_Settings
             // 
+            tbpg_Settings.Controls.Add(cb_AutoStart);
             tbpg_Settings.Controls.Add(bt_ComOpen);
             tbpg_Settings.Controls.Add(tb_Port);
             tbpg_Settings.Controls.Add(tb_ServerURL);
@@ -448,6 +456,19 @@
             tbpg_Settings.TabIndex = 3;
             tbpg_Settings.Text = "设置";
             tbpg_Settings.UseVisualStyleBackColor = true;
+            // 
+            // cb_AutoStart
+            // 
+            cb_AutoStart.AutoSize = true;
+            cb_AutoStart.Checked = true;
+            cb_AutoStart.CheckState = CheckState.Checked;
+            cb_AutoStart.Location = new Point(80, 82);
+            cb_AutoStart.Name = "cb_AutoStart";
+            cb_AutoStart.Size = new Size(75, 21);
+            cb_AutoStart.TabIndex = 15;
+            cb_AutoStart.Text = "开机自启";
+            cb_AutoStart.UseVisualStyleBackColor = true;
+            cb_AutoStart.Click += cb_AutoStart_Click;
             // 
             // bt_ComOpen
             // 
@@ -493,6 +514,34 @@
             label9.TabIndex = 0;
             label9.Text = "服务器地址:";
             // 
+            // notifyIcon1
+            // 
+            notifyIcon1.ContextMenuStrip = contextMenuStrip1;
+            notifyIcon1.Text = "notifyIcon1";
+            notifyIcon1.Visible = true;
+            notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ctms_ShowMain, ctms_Exit });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.ShowImageMargin = false;
+            contextMenuStrip1.Size = new Size(112, 48);
+            // 
+            // ctms_ShowMain
+            // 
+            ctms_ShowMain.Name = "ctms_ShowMain";
+            ctms_ShowMain.Size = new Size(111, 22);
+            ctms_ShowMain.Text = "显示主界面";
+            ctms_ShowMain.Click += ctms_ShowMain_Click;
+            // 
+            // ctms_Exit
+            // 
+            ctms_Exit.Name = "ctms_Exit";
+            ctms_Exit.Size = new Size(111, 22);
+            ctms_Exit.Text = "退出";
+            ctms_Exit.Click += ctms_Exit_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -518,6 +567,7 @@
             ((System.ComponentModel.ISupportInitialize)dgv_Blacklist).EndInit();
             tbpg_Settings.ResumeLayout(false);
             tbpg_Settings.PerformLayout();
+            contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -561,5 +611,10 @@
         private TextBox tb_Port;
         private TextBox tb_ServerURL;
         private Button bt_ComOpen;
+        private CheckBox cb_AutoStart;
+        private NotifyIcon notifyIcon1;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem ctms_ShowMain;
+        private ToolStripMenuItem ctms_Exit;
     }
 }
