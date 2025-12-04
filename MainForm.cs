@@ -72,6 +72,7 @@ namespace CarAlarm
         {
             // 启动文件日志
             FileLogger.Start();
+            FileLogger.LogInfo("启动程序...");
             // 载入车牌/车主列表
             LoadCarList();
             // 初始化车辆进入记录表格
@@ -87,36 +88,15 @@ namespace CarAlarm
             }
 
             // 托盘图标
-            notifyIcon1.Icon = this.Icon;               // 使用当前程序图标
-            notifyIcon1.Visible = false;
+            notifyIcon1.Icon = this.Icon; // 使用当前程序图标
+            notifyIcon1.Visible = true;
             notifyIcon1.Text = "声光报警系统";
-
             // 如果启动参数包含 /autostart 则自动隐藏到托盘
+            
             if (Environment.GetCommandLineArgs().Contains("/autostart"))
                 HideToTray();
-
         }
-        /// <summary>
-        /// 窗体关闭时清理资源
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            // 取消网络任务
-            _cts?.Cancel();
-            // 停止并刷新日志（阻塞等待最多 5 秒）
-            FileLogger.Stop(TimeSpan.FromSeconds(5));
-            // 释放 carList 监视器与定时器
-            try
-            {
-                _carListWatcher?.Dispose();
-                _carListReloadTimer?.Stop();
-                _carListReloadTimer?.Dispose();
-            }
-            catch { /* 忽略释放异常 */ }
-
-            base.OnFormClosing(e);
-        }
+        
 
         #region WebSocket连接、发送、接收和数据处理 
 
@@ -733,8 +713,8 @@ namespace CarAlarm
 
                 var ComClose = lbl_COMStatus.Text.Equals("无") ? "无" : "关闭串口" + lbl_COMStatus.Text;
                 lbl_COMStatus.Text = selected;
-                FileLogger.LogError(ComClose);
-                FileLogger.LogError("已打开串口: " + selected);
+                FileLogger.LogInfo(ComClose);
+                FileLogger.LogInfo("已打开串口: " + selected);
             }
             catch (UnauthorizedAccessException uaEx)
             {
@@ -840,9 +820,9 @@ namespace CarAlarm
         /// <param name="e"></param>
         private void ctms_Exit_Click(object sender, EventArgs e)
         {
-            notifyIcon1.Visible = false;
+            notifyIcon1.Visible = true;
             Application.Exit();
-            FileLogger.LogInfo("退出程序.");
+            FileLogger.LogInfo("退出程序...");
         }
         /// <summary>
         /// 双击托盘恢复窗口函数
@@ -858,9 +838,40 @@ namespace CarAlarm
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;
-            notifyIcon1.Visible = false;
+            notifyIcon1.Visible = true;
             this.Activate();
             FileLogger.LogInfo("显示主窗口.");
+        }
+        /// <summary>
+        /// 窗体关闭时清理资源
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                // 用户主动关闭，比如点击右上角 X 或 Alt+F4
+                e.Cancel = true; // 取消关闭
+                HideToTray();
+            }
+            else
+            {
+                // 其他方式关闭（系统关机、程序退出、Application.Exit、任务管理器…）
+                // 取消网络任务
+                _cts?.Cancel();
+                // 停止并刷新日志（阻塞等待最多 5 秒）
+                FileLogger.Stop(TimeSpan.FromSeconds(5));
+                // 释放 carList 监视器与定时器
+                try
+                {
+                    _carListWatcher?.Dispose();
+                    _carListReloadTimer?.Stop();
+                    _carListReloadTimer?.Dispose();
+                }
+                catch { /* 忽略释放异常 */ }
+
+                base.OnFormClosing(e);
+            }            
         }
         /// <summary>
         /// 窗口最小化时隐藏到托盘
@@ -869,8 +880,6 @@ namespace CarAlarm
         /// <param name="e"></param>
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            //base.OnSizeChanged(e);
-
             if (this.WindowState == FormWindowState.Minimized)
             {
                 HideToTray();
@@ -1054,11 +1063,6 @@ namespace CarAlarm
             return result;
         }
         #endregion
-
-
-
-
-
-
+        
     }
 }
